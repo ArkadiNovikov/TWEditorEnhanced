@@ -58,6 +58,7 @@ public class KeyInputStream extends InputStream {
         }
     }
 
+    @Override
     public void close()
             throws IOException {
         if (this.in != null) {
@@ -67,10 +68,12 @@ public class KeyInputStream extends InputStream {
         this.residualLength = 0;
     }
 
+    @Override
     public int available() {
         return this.residualLength;
     }
 
+    @Override
     public int read()
             throws IOException {
         if (this.in == null) {
@@ -89,11 +92,13 @@ public class KeyInputStream extends InputStream {
         return result;
     }
 
+    @Override
     public int read(byte[] buffer)
             throws IOException {
         return read(buffer, 0, buffer.length);
     }
 
+    @Override
     public int read(byte[] buffer, int bufferOffset, int bufferLength)
             throws IOException {
         if (this.in == null) {
@@ -116,6 +121,7 @@ public class KeyInputStream extends InputStream {
         return count;
     }
 
+    @Override
     protected void finalize() {
         try {
             close();

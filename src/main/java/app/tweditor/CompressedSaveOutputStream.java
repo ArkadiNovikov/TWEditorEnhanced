@@ -14,6 +14,7 @@ public class CompressedSaveOutputStream extends GZIPOutputStream {
         this.saveOutputStream = outputStream;
     }
 
+    @Override
     public void close()
             throws IOException {
         if (this.saveOutputStream != null) {
@@ -23,6 +24,7 @@ public class CompressedSaveOutputStream extends GZIPOutputStream {
         }
     }
 
+    @Override
     protected void finalize() {
         try {
             close();

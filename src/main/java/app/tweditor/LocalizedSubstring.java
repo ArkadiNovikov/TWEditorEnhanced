@@ -37,6 +37,7 @@ public class LocalizedSubstring
         this.gender = gender;
     }
 
+    @Override
     public Object clone() {
         Object clonedObject;
         try {

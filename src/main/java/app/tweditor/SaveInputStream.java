@@ -27,6 +27,7 @@ public class SaveInputStream extends InputStream {
         }
     }
 
+    @Override
     public void close()
             throws IOException {
         if (this.inputStream != null) {
@@ -37,10 +38,12 @@ public class SaveInputStream extends InputStream {
         this.residualLength = 0;
     }
 
+    @Override
     public int available() {
         return this.residualLength;
     }
 
+    @Override
     public int read()
             throws IOException {
         if (this.entry == null) {
@@ -69,11 +72,13 @@ public class SaveInputStream extends InputStream {
         return result;
     }
 
+    @Override
     public int read(byte[] buffer)
             throws IOException {
         return read(buffer, 0, buffer.length);
     }
 
+    @Override
     public int read(byte[] buffer, int bufferOffset, int bufferLength)
             throws IOException {
         if (this.entry == null) {
@@ -112,6 +117,7 @@ public class SaveInputStream extends InputStream {
         return count;
     }
 
+    @Override
     protected void finalize() {
         try {
             close();

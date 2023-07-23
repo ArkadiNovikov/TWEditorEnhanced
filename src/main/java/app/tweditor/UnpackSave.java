@@ -9,8 +9,8 @@ import javax.swing.SwingUtilities;
 
 public class UnpackSave extends Thread {
 
-    private ProgressDialog progressDialog;
-    private File dirFile;
+    private final ProgressDialog progressDialog;
+    private final File dirFile;
     private boolean unpackSuccessful = false;
 
     public UnpackSave(ProgressDialog dialog, File dirFile) {
@@ -18,6 +18,7 @@ public class UnpackSave extends Thread {
         this.dirFile = dirFile;
     }
 
+    @Override
     public void run() {
         File file = null;
         InputStream in = null;
@@ -76,6 +77,7 @@ public class UnpackSave extends Thread {
         }
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 UnpackSave.this.progressDialog.closeDialog(UnpackSave.this.unpackSuccessful);
             }

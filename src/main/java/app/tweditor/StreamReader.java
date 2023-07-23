@@ -7,8 +7,8 @@ import java.io.StringWriter;
 
 public class StreamReader extends Thread {
 
-    private InputStreamReader reader;
-    private StringWriter writer;
+    private final InputStreamReader reader;
+    private final StringWriter writer;
     private StringBuffer buffer;
     private int index = 0;
 
@@ -17,13 +17,15 @@ public class StreamReader extends Thread {
         this.writer = new StringWriter(1024);
     }
 
+    @Override
     public void run() {
         try {
-            int c;
-            while ((c = this.reader.read()) != -1) {
-                this.writer.write(c);
+            try (this.reader) {
+                int c;
+                while ((c = this.reader.read()) != -1) {
+                    this.writer.write(c);
+                }
             }
-            this.reader.close();
             this.buffer = this.writer.getBuffer();
         } catch (IOException exc) {
             Main.logException("Unable to read from input stream", exc);

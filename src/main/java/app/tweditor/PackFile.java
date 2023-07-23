@@ -18,9 +18,8 @@ public class PackFile extends Thread {
         this.extractDirectory = dirFile;
     }
 
+    @Override
     public void run() {
-        FileInputStream in = null;
-        OutputStream out = null;
         List<SaveEntry> entries = Main.saveDatabase.getEntries();
         try {
             for (SaveEntry entry : entries) {

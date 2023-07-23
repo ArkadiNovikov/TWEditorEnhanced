@@ -169,16 +169,15 @@ public class DBList extends DBElementValue
         DBElement element = getElement(label);
         if (element != null) {
             int fieldType = element.getType();
-            if (fieldType == 10) {
-                element.setValue(value);
-            } else if (fieldType == 11) {
-                element.setValue(value);
-            } else if (fieldType == 12) {
-                LocalizedString string = (LocalizedString) element.getValue();
-                LocalizedSubstring substring = new LocalizedSubstring(value, Main.languageID, 0);
-                string.addSubstring(substring);
-            } else {
-                throw new DBException("Field " + label + " is not a string");
+            switch (fieldType) {
+                case 10 -> element.setValue(value);
+                case 11 -> element.setValue(value);
+                case 12 -> {
+                    LocalizedString string = (LocalizedString) element.getValue();
+                    LocalizedSubstring substring = new LocalizedSubstring(value, Main.languageID, 0);
+                    string.addSubstring(substring);
+                }
+                default -> throw new DBException("Field " + label + " is not a string");
             }
         } else {
             addElement(new DBElement(10, 0, label, value));
@@ -192,13 +191,13 @@ public class DBList extends DBElementValue
         if (element != null) {
             int fieldType = element.getType();
             if ((fieldType == 0) || (fieldType == 2) || (fieldType == 3) || (fieldType == 5)) {
-                value = ((Integer) element.getValue()).intValue();
+                value = ((Integer) element.getValue());
             } else {
                 if ((fieldType == 6) || (fieldType == 7) || (fieldType == 4)) {
                     value = ((Long) element.getValue()).intValue();
                 } else {
                     if (fieldType == 1) {
-                        value = ((Character) element.getValue()).charValue();
+                        value = ((Character) element.getValue());
                     } else {
                         if (fieldType == 8) {
                             value = ((Float) element.getValue()).intValue();
@@ -230,32 +229,32 @@ public class DBList extends DBElementValue
         if (element != null) {
             int fieldType = element.getType();
             if (fieldType == 0) {
-                element.setValue(new Integer(value & 0xFF));
+                element.setValue(value & 0xFF);
             } else if (fieldType == 2) {
-                element.setValue(new Integer(value & 0xFFFF));
+                element.setValue(value & 0xFFFF);
             } else if (fieldType == 3) {
                 int shortValue = value & 0xFFFF;
                 if (shortValue > 32767) {
                     shortValue |= -65536;
                 }
-                element.setValue(new Integer(shortValue));
+                element.setValue(shortValue);
             } else if (fieldType == 5) {
-                element.setValue(new Integer(value));
+                element.setValue(value);
             } else if (fieldType == 4) {
-                element.setValue(new Long(value & 0xFFFFFFFF));
+                element.setValue(Long.valueOf(value & 0xFFFFFFFF));
             } else if ((fieldType == 6) || (fieldType == 7)) {
-                element.setValue(new Long(value));
+                element.setValue(Long.valueOf(value));
             } else if (fieldType == 1) {
-                element.setValue(new Character((char) value));
+                element.setValue((char) value);
             } else if (fieldType == 8) {
-                element.setValue(new Float(value));
+                element.setValue(Float.valueOf(value));
             } else if (fieldType == 9) {
-                element.setValue(new Double(value));
+                element.setValue(Double.valueOf(value));
             } else {
                 throw new DBException("Field " + label + " is not numeric");
             }
         } else {
-            addElement(new DBElement(type, 0, label, new Integer(value)));
+            addElement(new DBElement(type, 0, label, value));
         }
     }
 
@@ -266,7 +265,7 @@ public class DBList extends DBElementValue
         if (element != null) {
             int fieldType = element.getType();
             if (fieldType == 8) {
-                value = ((Float) element.getValue()).floatValue();
+                value = ((Float) element.getValue());
             } else {
                 throw new DBException("Field " + label + " is not floating-point");
             }
@@ -283,15 +282,16 @@ public class DBList extends DBElementValue
         if (element != null) {
             int fieldType = element.getType();
             if (fieldType == 8) {
-                element.setValue(new Float(value));
+                element.setValue(value);
             } else {
                 throw new DBException("Field " + label + " is not floating-point");
             }
         } else {
-            addElement(new DBElement(8, 0, label, new Float(value)));
+            addElement(new DBElement(8, 0, label, value));
         }
     }
 
+    @Override
     public Object clone() {
         Object clonedObject = super.clone();
         DBList clonedList = (DBList) clonedObject;

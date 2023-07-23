@@ -19,23 +19,23 @@ public class TextDatabase {
 
     public TextDatabase(String filePath)
             throws DBException, IOException {
-        InputStreamReader reader = new FileReader(filePath);
-        readDefinitions(reader);
-        reader.close();
+        try (InputStreamReader reader = new FileReader(filePath)) {
+            readDefinitions(reader);
+        }
     }
 
     public TextDatabase(File file)
             throws DBException, IOException {
-        InputStreamReader reader = new FileReader(file);
-        readDefinitions(reader);
-        reader.close();
+        try (InputStreamReader reader = new FileReader(file)) {
+            readDefinitions(reader);
+        }
     }
 
     public TextDatabase(InputStream inputStream)
             throws DBException, IOException {
-        InputStreamReader reader = new InputStreamReader(inputStream);
-        readDefinitions(reader);
-        reader.close();
+        try (InputStreamReader reader = new InputStreamReader(inputStream)) {
+            readDefinitions(reader);
+        }
     }
 
     private void readDefinitions(InputStreamReader reader)
@@ -47,88 +47,87 @@ public class TextDatabase {
         boolean columnsDone = false;
 
         String[] values = null;
-        BufferedReader in = new BufferedReader(reader);
-        String line;
-        while ((line = in.readLine()) != null) {
-            int lineLength = line.length();
-            if ((lineLength != 0) && (line.charAt(0) != '#')) {
-                boolean skipIndex = true;
-                int index = 0;
-                int value = 0;
-                if (columnsDone) {
-                    values = new String[this.columns.size()];
-                }
-
-                while (index < lineLength) {
-                    if (Character.isWhitespace(line.charAt(index))) {
-                        index++;
-                    } else {
-                        boolean quoted;
-                        if (line.charAt(index) == '"') {
-                            quoted = true;
-                            index++;
-                        } else {
-                            quoted = false;
-                        }
-
-                        int start = index;
-                        if (start >= lineLength) {
-                            break;
-                        }
-                        while ((index < lineLength)
-                                && (quoted
-                                        ? line.charAt(index) != '"'
-                                        : !Character.isWhitespace(line.charAt(index)))) {
-                            index++;
-                        }
-                        String token;
-                        if (start == index) {
-                            token = new String();
-                        } else {
-                            token = line.substring(start, index);
-                        }
-                        if ((index < lineLength) && (line.charAt(index) == '"')) {
-                            index++;
-                        }
-
-                        if (!headerDone) {
-                            if (value == 0) {
-                                if (!token.equals("2DA")) {
-                                    throw new DBException("File format '" + token + "' is not supported");
-                                }
-                            } else if ((value == 1)
-                                    && (!token.equals("V2.0"))) {
-                                throw new DBException("File version '" + token + "' is not supported");
-                            }
-                        } else if (!columnsDone) {
-                            this.columnMap.put(token.toLowerCase(), new Integer(value));
-                            this.columns.add(token);
-                        } else if (skipIndex) {
-                            skipIndex = false;
-                            value--;
-                        } else if (value < values.length) {
-                            values[value] = token;
-                        }
-
-                        value++;
-                    }
-
-                }
-
-                if (value > 0) {
+        try (BufferedReader in = new BufferedReader(reader)) {
+            String line;
+            while ((line = in.readLine()) != null) {
+                int lineLength = line.length();
+                if ((lineLength != 0) && (line.charAt(0) != '#')) {
+                    boolean skipIndex = true;
+                    int index = 0;
+                    int value = 0;
                     if (columnsDone) {
-                        this.resources.add(values);
-                    } else if (headerDone) {
-                        columnsDone = true;
-                    } else {
-                        headerDone = true;
+                        values = new String[this.columns.size()];
+                    }
+                    
+                    while (index < lineLength) {
+                        if (Character.isWhitespace(line.charAt(index))) {
+                            index++;
+                        } else {
+                            boolean quoted;
+                            if (line.charAt(index) == '"') {
+                                quoted = true;
+                                index++;
+                            } else {
+                                quoted = false;
+                            }
+                            
+                            int start = index;
+                            if (start >= lineLength) {
+                                break;
+                            }
+                            while ((index < lineLength)
+                                    && (quoted
+                                    ? line.charAt(index) != '"'
+                                    : !Character.isWhitespace(line.charAt(index)))) {
+                                index++;
+                            }
+                            String token;
+                            if (start == index) {
+                                token = new String();
+                            } else {
+                                token = line.substring(start, index);
+                            }
+                            if ((index < lineLength) && (line.charAt(index) == '"')) {
+                                index++;
+                            }
+                            
+                            if (!headerDone) {
+                                if (value == 0) {
+                                    if (!token.equals("2DA")) {
+                                        throw new DBException("File format '" + token + "' is not supported");
+                                    }
+                                } else if ((value == 1)
+                                        && (!token.equals("V2.0"))) {
+                                    throw new DBException("File version '" + token + "' is not supported");
+                                }
+                            } else if (!columnsDone) {
+                                this.columnMap.put(token.toLowerCase(), value);
+                                this.columns.add(token);
+                            } else if (skipIndex) {
+                                skipIndex = false;
+                                value--;
+                            } else if (value < values.length) {
+                                values[value] = token;
+                            }
+                            
+                            value++;
+                        }
+
+                    }
+                    
+                    if (value > 0) {
+                        if (columnsDone) {
+                            this.resources.add(values);
+                        } else if (headerDone) {
+                            columnsDone = true;
+                        } else {
+                            headerDone = true;
+                        }
                     }
                 }
+                
             }
-
         }
-
-        in.close();
     }
 
     public List<String> getColumnLabels() {
@@ -153,11 +152,11 @@ public class TextDatabase {
         if (resourceIndex >= this.resources.size()) {
             throw new IllegalArgumentException("Resource index is not valid");
         }
-        Integer valueIndex = (Integer) this.columnMap.get(valueLabel.toLowerCase());
+        Integer valueIndex = this.columnMap.get(valueLabel.toLowerCase());
         if (valueIndex == null) {
             return "";
         }
-        String string = ((String[]) this.resources.get(resourceIndex))[valueIndex.intValue()];
+        String string = ((String[]) this.resources.get(resourceIndex))[valueIndex];
         if ((string.length() >= 4) && (string.substring(0, 4).equals("****"))) {
             string = "";
         }
@@ -168,12 +167,12 @@ public class TextDatabase {
         if (resourceIndex >= this.resources.size()) {
             throw new IllegalArgumentException("Resource index is not valid");
         }
-        Integer valueIndex = (Integer) this.columnMap.get(valueLabel.toLowerCase());
+        Integer valueIndex = this.columnMap.get(valueLabel.toLowerCase());
         if (valueIndex == null) {
             return 0;
         }
 
-        String string = ((String[]) this.resources.get(resourceIndex))[valueIndex.intValue()];
+        String string = ((String[]) this.resources.get(resourceIndex))[valueIndex];
         int value;
         if ((string.length() >= 4) && (string.substring(0, 4).equals("****"))) {
             value = 0;

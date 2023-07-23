@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileSystemView;
 
 public class Main {
@@ -96,9 +98,9 @@ public class Main {
                         locateString
                     };
                     Process process = Runtime.getRuntime().exec(cmd);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    installPath = reader.readLine();
-                    reader.close();
+                    try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                        installPath = reader.readLine();
+                    }
 
                     languageID = 3;
                 } else if (osWin) {
@@ -184,9 +186,9 @@ public class Main {
             propFile = new File(new StringBuilder().append(dirFile.getPath()).append(fileSeparator).append("TWEditor.properties").toString());
             properties = new Properties();
             if (propFile.exists()) {
-                FileInputStream in = new FileInputStream(propFile);
-                properties.load(in);
-                in.close();
+                try (var in = new FileInputStream(propFile)) {
+                    properties.load(in);
+                }
             }
 
             properties.setProperty("java.version", System.getProperty("java.version"));
@@ -201,11 +203,12 @@ public class Main {
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     Main.createAndShowGUI();
                 }
             });
-        } catch (Throwable exc) {
+        } catch (DBException | IOException | ClassNotFoundException | IllegalAccessException | IllegalThreadStateException | InstantiationException | InterruptedException | NumberFormatException | UnsupportedLookAndFeelException exc) {
             logException("Exception during program initialization", exc);
         }
     }
@@ -237,6 +240,7 @@ public class Main {
             mainWindow.setVisible(true);
 
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     Main.buildTemplates();
                 }
@@ -254,11 +258,9 @@ public class Main {
     }
 
     public static void saveProperties() {
-        try {
-            FileOutputStream out = new FileOutputStream(propFile);
+        try (var out = new FileOutputStream(propFile)) {
             properties.store(out, "TWEditor Properties");
-            out.close();
-        } catch (Throwable exc) {
+        } catch (IOException exc) {
             logException("Exception while saving application properties", exc);
         }
     }
@@ -307,13 +309,14 @@ public class Main {
             deferredException = exc;
             try {
                 SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
                     public void run() {
                         Main.logException(Main.deferredText, Main.deferredException);
                         //Main.access$102(null);
                         //Main.access$002(null);
                     }
                 });
-            } catch (Throwable swingException) {
+            } catch (InterruptedException | InvocationTargetException swingException) {
                 deferredException = null;
                 deferredText = null;
             }
@@ -325,11 +328,11 @@ public class Main {
 
         for (int i = 0; i < length; i++) {
             if (i % 32 == 0) {
-                System.out.print(String.format(" %14X  ", new Object[]{Integer.valueOf(i)}));
+                System.out.print(String.format(" %14X  ", new Object[]{i}));
             } else if (i % 4 == 0) {
                 System.out.print(" ");
             }
-            System.out.print(String.format("%02X", new Object[]{Byte.valueOf(data[(offset + i)])}));
+            System.out.print(String.format("%02X", new Object[]{data[(offset + i)]}));
 
             if (i % 32 == 31) {
                 System.out.println();

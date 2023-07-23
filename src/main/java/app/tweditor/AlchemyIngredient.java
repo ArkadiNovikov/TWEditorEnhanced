@@ -4,8 +4,8 @@ import java.util.List;
 
 public class AlchemyIngredient {
 
-    private int id;
-    private List<String> substances;
+    private final int id;
+    private final List<String> substances;
 
     public AlchemyIngredient(int id, List<String> substances) {
         this.id = id;

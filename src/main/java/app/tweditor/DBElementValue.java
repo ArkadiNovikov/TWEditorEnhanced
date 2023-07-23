@@ -3,6 +3,7 @@ package app.tweditor;
 public abstract class DBElementValue
         implements Cloneable {
 
+    @Override
     public Object clone() {
         Object clonedObject;
         try {

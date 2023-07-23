@@ -35,6 +35,7 @@ public class ItemTemplate
         return this.fieldList;
     }
 
+    @Override
     public boolean equals(Object obj) {
         boolean equal = false;
         if ((obj != null) && ((obj instanceof ItemTemplate))
@@ -44,10 +45,12 @@ public class ItemTemplate
         return equal;
     }
 
+    @Override
     public int compareTo(ItemTemplate obj) {
         return this.itemName.compareTo(obj.getItemName());
     }
 
+    @Override
     public String toString() {
         return this.itemName + " (" + this.resourceName + ")";
     }

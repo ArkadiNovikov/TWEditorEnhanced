@@ -11,13 +11,14 @@ import javax.swing.SwingUtilities;
 
 public class LoadTemplates extends Thread {
 
-    private ProgressDialog progressDialog;
+    private final ProgressDialog progressDialog;
     private boolean success = false;
 
     public LoadTemplates(ProgressDialog dialog) {
         this.progressDialog = dialog;
     }
 
+    @Override
     public void run() {
         try {
             Set mapSet = Main.resourceFiles.entrySet();
@@ -83,6 +84,7 @@ public class LoadTemplates extends Thread {
         }
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 LoadTemplates.this.progressDialog.closeDialog(LoadTemplates.this.success);
             }

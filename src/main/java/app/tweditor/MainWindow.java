@@ -1,6 +1,7 @@
 package app.tweditor;
 
 import java.awt.Dimension;
+import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,15 +24,15 @@ public class MainWindow extends JFrame
     private boolean windowMinimized = false;
 
     private boolean titleModified = false;
-    private JTabbedPane tabbedPane;
-    private StatsPanel statsPanel;
-    private AttributesPanel attributesPanel;
-    private SignsPanel signsPanel;
-    private StylesPanel stylesPanel;
-    private EquipPanel equipPanel;
-    private InventoryPanel inventoryPanel;
-    private QuestsPanel questsPanel;
-    private DifficultyPanel difficultyPanel;
+    private final JTabbedPane tabbedPane;
+    private final StatsPanel statsPanel;
+    private final AttributesPanel attributesPanel;
+    private final SignsPanel signsPanel;
+    private final StylesPanel stylesPanel;
+    private final EquipPanel equipPanel;
+    private final InventoryPanel inventoryPanel;
+    private final QuestsPanel questsPanel;
+    private final DifficultyPanel difficultyPanel;
 
     public MainWindow() {
         super("The Witcher Save Editor");
@@ -160,6 +161,7 @@ public class MainWindow extends JFrame
         addWindowListener(new ApplicationWindowListener(this));
     }
 
+    @Override
     public void setTitle(String title) {
         if (title != null) {
             super.setTitle(title);
@@ -176,6 +178,7 @@ public class MainWindow extends JFrame
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
         try {
             String action = ae.getActionCommand();
@@ -204,7 +207,7 @@ public class MainWindow extends JFrame
                 packSave();
                 setTitle(null);
             }
-        } catch (Throwable exc) {
+        } catch (HeadlessException exc) {
             Main.logException("Exception while processing action event", exc);
         }
     }
@@ -227,7 +230,7 @@ public class MainWindow extends JFrame
             chooser = new JFileChooser(Main.gamePath + Main.fileSeparator + "saves");
         }
 
-        chooser.putClientProperty("FileChooser.useShellFolder", Boolean.valueOf(Main.useShellFolder));
+        chooser.putClientProperty("FileChooser.useShellFolder", Main.useShellFolder);
         chooser.setDialogTitle("Select Save File");
         if (chooser.showOpenDialog(this) != 0) {
             return;
@@ -353,7 +356,7 @@ public class MainWindow extends JFrame
             chooser = new JFileChooser();
         }
 
-        chooser.putClientProperty("FileChooser.useShellFolder", Boolean.valueOf(Main.useShellFolder));
+        chooser.putClientProperty("FileChooser.useShellFolder", Main.useShellFolder);
         chooser.setDialogTitle("Select Destination Directory");
         chooser.setApproveButtonText("Select");
         chooser.setFileSelectionMode(1);
@@ -397,7 +400,7 @@ public class MainWindow extends JFrame
             chooser = new JFileChooser();
         }
 
-        chooser.putClientProperty("FileChooser.useShellFolder", Boolean.valueOf(Main.useShellFolder));
+        chooser.putClientProperty("FileChooser.useShellFolder", Main.useShellFolder);
         chooser.setDialogTitle("Select Source Directory");
         chooser.setApproveButtonText("Select");
         chooser.setFileSelectionMode(1);
@@ -496,20 +499,23 @@ public class MainWindow extends JFrame
 
     private class ApplicationWindowListener extends WindowAdapter {
 
-        private JFrame window;
+        private final JFrame window;
 
         public ApplicationWindowListener(JFrame window) {
             this.window = window;
         }
 
+        @Override
         public void windowIconified(WindowEvent we) {
             MainWindow.this.windowMinimized = true;
         }
 
+        @Override
         public void windowDeiconified(WindowEvent we) {
             MainWindow.this.windowMinimized = false;
         }
 
+        @Override
         public void windowClosing(WindowEvent we) {
             try {
                 MainWindow.this.exitProgram();

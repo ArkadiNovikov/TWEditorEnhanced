@@ -33,6 +33,7 @@ public class SaveOutputStream extends OutputStream {
         }
     }
 
+    @Override
     public void write(int b)
             throws IOException {
         if (this.entry == null) {
@@ -54,11 +55,13 @@ public class SaveOutputStream extends OutputStream {
         this.resourceLength += 1;
     }
 
+    @Override
     public void write(byte[] buffer)
             throws IOException {
         write(buffer, 0, buffer.length);
     }
 
+    @Override
     public void write(byte[] buffer, int bufferOffset, int bufferLength)
             throws IOException {
         if (this.entry == null) {
@@ -87,6 +90,7 @@ public class SaveOutputStream extends OutputStream {
         this.resourceLength += bufferLength;
     }
 
+    @Override
     public void flush()
             throws IOException {
         if (this.entry == null) {
@@ -97,6 +101,7 @@ public class SaveOutputStream extends OutputStream {
         }
     }
 
+    @Override
     public void close()
             throws IOException {
         if (this.entry != null) {
@@ -110,6 +115,7 @@ public class SaveOutputStream extends OutputStream {
         }
     }
 
+    @Override
     protected void finalize() {
         try {
             close();

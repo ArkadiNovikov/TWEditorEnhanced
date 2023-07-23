@@ -12,6 +12,7 @@ public class SaveFile extends Thread {
         this.progressDialog = dialog;
     }
 
+    @Override
     public void run() {
         try {
             Main.database.save();

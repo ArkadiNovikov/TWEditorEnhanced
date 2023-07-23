@@ -99,11 +99,8 @@ public class Database {
         if (this.file == null) {
             throw new IllegalStateException("No database file is available");
         }
-        FileInputStream in = new FileInputStream(this.file);
-        try {
+        try (var in = new FileInputStream(this.file)) {
             load(in);
-        } finally {
-            in.close();
         }
     }
 
@@ -121,22 +118,16 @@ public class Database {
             if ((!this.fileVersion.equals("V3.2")) && (!this.fileVersion.equals("V3.3"))) {
                 throw new DBException(this.name + ": GFF version " + this.fileVersion + " is not supported");
             }
-            int structBaseOffset = getInteger(headerBuffer, 8);
             this.structArrayCount = getInteger(headerBuffer, 12);
             this.structArraySize = this.structArrayCount;
-            int fieldBaseOffset = getInteger(headerBuffer, 16);
             this.fieldArrayCount = getInteger(headerBuffer, 20);
             this.fieldArraySize = this.fieldArrayCount;
-            int labelBaseOffset = getInteger(headerBuffer, 24);
             this.labelArrayCount = getInteger(headerBuffer, 28);
             this.labelArraySize = this.labelArrayCount;
-            int fieldDataOffset = getInteger(headerBuffer, 32);
             this.fieldDataLength = getInteger(headerBuffer, 36);
             this.fieldDataSize = this.fieldDataLength;
-            int fieldIndicesOffset = getInteger(headerBuffer, 40);
             this.fieldIndicesLength = getInteger(headerBuffer, 44);
             this.fieldIndicesSize = this.fieldIndicesLength;
-            int listIndicesOffset = getInteger(headerBuffer, 48);
             this.listIndicesLength = getInteger(headerBuffer, 52);
             this.listIndicesSize = this.listIndicesLength;
 
@@ -157,7 +148,6 @@ public class Database {
                 if (count != size) {
                     throw new DBException(this.name + ": Field array data truncated");
                 }
-
             }
 
             if (this.labelArrayCount > 0) {
@@ -167,7 +157,6 @@ public class Database {
                 if (count != size) {
                     throw new DBException(this.name + ": Label array data truncated");
                 }
-
             }
 
             if (this.fieldDataLength > 0) {
@@ -176,7 +165,6 @@ public class Database {
                 if (count != this.fieldDataSize) {
                     throw new DBException(this.name + ": Field data truncated");
                 }
-
             }
 
             if (this.fieldIndicesLength > 0) {
@@ -185,7 +173,6 @@ public class Database {
                 if (count != this.fieldIndicesSize) {
                     throw new DBException(this.name + ": Field indices truncated");
                 }
-
             }
 
             if (this.listIndicesLength > 0) {
@@ -194,7 +181,6 @@ public class Database {
                 if (count != this.listIndicesSize) {
                     throw new DBException(this.name + ": List indices truncated");
                 }
-
             }
 
             this.topLevelStruct = decodeStruct(new String(), 0);
@@ -229,36 +215,21 @@ public class Database {
         String label = new String(this.labelBuffer, labelOffset, labelLength);
         DBElement element;
         switch (fieldType) {
-            case 15:
-                element = decodeList(label, dataOffset);
-                break;
-            case 14:
-                element = decodeStruct(label, dataOffset);
-                break;
-            case 0:
-                element = new DBElement(fieldType, 0, label, new Integer(dataOffset & 0xFF));
-                break;
-            case 1:
-                element = new DBElement(fieldType, 0, label, new Character((char) dataOffset));
-                break;
-            case 2:
-                element = new DBElement(fieldType, 0, label, new Integer(dataOffset & 0xFFFF));
-                break;
-            case 3:
+            case 15 -> element = decodeList(label, dataOffset);
+            case 14 -> element = decodeStruct(label, dataOffset);
+            case 0 -> element = new DBElement(fieldType, 0, label, dataOffset & 0xFF);
+            case 1 -> element = new DBElement(fieldType, 0, label, (char) dataOffset);
+            case 2 -> element = new DBElement(fieldType, 0, label, dataOffset & 0xFFFF);
+            case 3 -> {
                 dataOffset &= 65535;
                 if (dataOffset > 32767) {
                     dataOffset |= -65536;
                 }
-                element = new DBElement(fieldType, 0, label, new Integer(dataOffset));
-                break;
-            case 4:
-                element = new DBElement(fieldType, 0, label, new Long(dataOffset & 0xFFFFFFFF));
-                break;
-            case 5:
-                element = new DBElement(fieldType, 0, label, new Integer(dataOffset));
-                break;
-            case 6:
-            case 7:
+                element = new DBElement(fieldType, 0, label, dataOffset);
+            }
+            case 4 -> element = new DBElement(fieldType, 0, label, Long.valueOf(dataOffset & 0xFFFFFFFF));
+            case 5 -> element = new DBElement(fieldType, 0, label, dataOffset);
+            case 6, 7 -> {
                 if (dataOffset + 8 > this.fieldDataLength) {
                     throw new DBException(this.name + ": Field data offset " + dataOffset + " exceeds field data");
                 }
@@ -267,20 +238,18 @@ public class Database {
                 if ((fieldType == 6) && (longValue < 0L)) {
                     throw new DBException("DWORD64 value is too large for Java representation");
                 }
-                element = new DBElement(fieldType, 0, label, new Long(longValue));
-                break;
-            case 8:
-                element = new DBElement(fieldType, 0, label, new Float(Float.intBitsToFloat(dataOffset)));
-                break;
-            case 9:
+                element = new DBElement(fieldType, 0, label, longValue);
+            }
+            case 8 -> element = new DBElement(fieldType, 0, label, Float.intBitsToFloat(dataOffset));
+            case 9 -> {
                 if (dataOffset + 8 > this.fieldDataLength) {
                     throw new DBException(this.name + ": Field data offset " + dataOffset + " exceeds field data");
                 }
                 long longBits = this.fieldDataBuffer[(dataOffset + 0)] & 0xFF | (this.fieldDataBuffer[(dataOffset + 1)] & 0xFF) << 8 | (this.fieldDataBuffer[(dataOffset + 2)] & 0xFF) << 16 | (this.fieldDataBuffer[(dataOffset + 3)] & 0xFF) << 24 | (this.fieldDataBuffer[(dataOffset + 4)] & 0xFF) << 32 | (this.fieldDataBuffer[(dataOffset + 5)] & 0xFF) << 40 | (this.fieldDataBuffer[(dataOffset + 6)] & 0xFF) << 48 | (this.fieldDataBuffer[(dataOffset + 7)] & 0xFF) << 56;
 
-                element = new DBElement(fieldType, 0, label, new Double(Double.longBitsToDouble(longBits)));
-                break;
-            case 13:
+                element = new DBElement(fieldType, 0, label, Double.longBitsToDouble(longBits));
+            }
+            case 13 -> {
                 if (dataOffset + 4 > this.fieldDataLength) {
                     throw new DBException("Field data offset " + dataOffset + " exceeds field data");
                 }
@@ -294,8 +263,8 @@ public class Database {
                     System.arraycopy(this.fieldDataBuffer, dataOffset, byteData, 0, byteLength);
                 }
                 element = new DBElement(fieldType, 0, label, byteData);
-                break;
-            case 11:
+            }
+            case 11 -> {
                 if (dataOffset + 1 > this.fieldDataLength) {
                     throw new DBException(this.name + ": Field data offset " + dataOffset + " exceeds field data");
                 }
@@ -306,17 +275,17 @@ public class Database {
                 }
                 String resourceString;
                 if (resourceLength > 0)
-        try {
-                    resourceString = new String(this.fieldDataBuffer, dataOffset, resourceLength, "UTF-8");
-                } catch (UnsupportedEncodingException exc) {
-                    throw new DBException(this.name + ": UTF-8 encoding is not supported", exc);
-                } else {
+                    try {
+                        resourceString = new String(this.fieldDataBuffer, dataOffset, resourceLength, "UTF-8");
+                    } catch (UnsupportedEncodingException exc) {
+                        throw new DBException(this.name + ": UTF-8 encoding is not supported", exc);
+                    } else {
                     resourceString = new String();
                 }
 
                 element = new DBElement(fieldType, 0, label, resourceString);
-                break;
-            case 10:
+            }
+            case 10 -> {
                 if (dataOffset + 4 > this.fieldDataLength) {
                     throw new DBException(this.name + ": Field data offset " + dataOffset + " exceeds field data");
                 }
@@ -327,17 +296,17 @@ public class Database {
                 }
                 String string;
                 if (stringLength > 0)
-        try {
-                    string = new String(this.fieldDataBuffer, dataOffset, stringLength, "UTF-8");
-                } catch (UnsupportedEncodingException exc) {
-                    throw new DBException(this.name + ": UTF-8 encoding is not supported", exc);
-                } else {
+                    try {
+                        string = new String(this.fieldDataBuffer, dataOffset, stringLength, "UTF-8");
+                    } catch (UnsupportedEncodingException exc) {
+                        throw new DBException(this.name + ": UTF-8 encoding is not supported", exc);
+                    } else {
                     string = new String();
                 }
 
                 element = new DBElement(fieldType, 0, label, string);
-                break;
-            case 12:
+            }
+            case 12 -> {
                 if (dataOffset + 12 > this.fieldDataLength) {
                     throw new DBException(this.name + ": Field data offset " + dataOffset + " exceeds field data");
                 }
@@ -367,11 +336,11 @@ public class Database {
                     }
                     String substring;
                     if (substringLength > 0)
-          try {
-                        substring = new String(this.fieldDataBuffer, dataOffset, substringLength, "UTF-8");
-                    } catch (UnsupportedEncodingException exc) {
-                        throw new DBException(this.name + ": UTF-8 encoding is not supported", exc);
-                    } else {
+                        try {
+                            substring = new String(this.fieldDataBuffer, dataOffset, substringLength, "UTF-8");
+                        } catch (UnsupportedEncodingException exc) {
+                            throw new DBException(this.name + ": UTF-8 encoding is not supported", exc);
+                        } else {
                         substring = new String();
                     }
 
@@ -381,9 +350,8 @@ public class Database {
                 }
 
                 element = new DBElement(fieldType, 0, label, localizedString);
-                break;
-            default:
-                throw new DBException(this.name + ": Unrecognized field type " + fieldType);
+            }
+            default -> throw new DBException(this.name + ": Unrecognized field type " + fieldType);
         }
 
         return element;
@@ -611,47 +579,25 @@ public class Database {
         Object fieldValue = element.getValue();
         int dataOffset;
         switch (fieldType) {
-            case 15:
-                dataOffset = encodeList(element);
-                break;
-            case 14:
-                dataOffset = encodeStruct(element);
-                break;
-            case 0:
-                dataOffset = ((Integer) fieldValue).intValue() & 0xFF;
-                break;
-            case 1:
-                dataOffset = ((Character) fieldValue).charValue() & 0xFFFF;
-                break;
-            case 2:
-            case 3:
-                dataOffset = ((Integer) fieldValue).intValue() & 0xFFFF;
-                break;
-            case 4:
-                dataOffset = ((Long) fieldValue).intValue();
-                break;
-            case 5:
-                dataOffset = ((Integer) fieldValue).intValue();
-                break;
-            case 6:
-            case 7:
-                dataOffset = setFieldData(((Long) fieldValue).longValue());
-                break;
-            case 8:
-                dataOffset = Float.floatToIntBits(((Float) fieldValue).floatValue());
-                break;
-            case 9:
-                dataOffset = setFieldData(Double.doubleToLongBits(((Double) fieldValue).doubleValue()));
-                break;
-            case 13:
+            case 15 -> dataOffset = encodeList(element);
+            case 14 -> dataOffset = encodeStruct(element);
+            case 0 -> dataOffset = ((Integer) fieldValue) & 0xFF;
+            case 1 -> dataOffset = ((Character) fieldValue) & 0xFFFF;
+            case 2, 3 -> dataOffset = ((Integer) fieldValue) & 0xFFFF;
+            case 4 -> dataOffset = ((Long) fieldValue).intValue();
+            case 5 -> dataOffset = ((Integer) fieldValue);
+            case 6, 7 -> dataOffset = setFieldData(((Long) fieldValue));
+            case 8 -> dataOffset = Float.floatToIntBits(((Float) fieldValue));
+            case 9 -> dataOffset = setFieldData(Double.doubleToLongBits(((Double) fieldValue)));
+            case 13 -> {
                 byte[] voidData = (byte[]) fieldValue;
                 int voidLength = voidData.length;
                 byte[] voidBuffer = new byte[4 + voidLength];
                 setInteger(voidLength, voidBuffer, 0);
                 System.arraycopy(voidData, 0, voidBuffer, 4, voidLength);
                 dataOffset = setFieldData(voidBuffer);
-                break;
-            case 11:
+            }
+            case 11 -> {
                 String resourceString = (String) fieldValue;
                 byte[] resourceData;
                 try {
@@ -668,8 +614,8 @@ public class Database {
                 resourceBuffer[0] = ((byte) resourceLength);
                 System.arraycopy(resourceData, 0, resourceBuffer, 1, resourceLength);
                 dataOffset = setFieldData(resourceBuffer);
-                break;
-            case 10:
+            }
+            case 10 -> {
                 String string = (String) fieldValue;
                 byte[] stringBuffer;
                 if (string.length() > 0) {
@@ -690,8 +636,8 @@ public class Database {
                 }
 
                 dataOffset = setFieldData(stringBuffer);
-                break;
-            case 12:
+            }
+            case 12 -> {
                 LocalizedString localizedString = (LocalizedString) fieldValue;
                 int substringCount = localizedString.getSubstringCount();
                 int localizedLength = 8;
@@ -702,11 +648,11 @@ public class Database {
                     String substring = localizedSubstring.getString();
                     byte[] substringData;
                     if (substring.length() > 0)
-          try {
-                        substringData = substring.getBytes("UTF-8");
-                    } catch (UnsupportedEncodingException exc) {
-                        throw new DBException(this.name + ": UTF-8 encoding is not supported", exc);
-                    } else {
+                        try {
+                            substringData = substring.getBytes("UTF-8");
+                        } catch (UnsupportedEncodingException exc) {
+                            throw new DBException(this.name + ": UTF-8 encoding is not supported", exc);
+                        } else {
                         substringData = new byte[0];
                     }
 
@@ -734,9 +680,8 @@ public class Database {
                 }
 
                 dataOffset = setFieldData(localizedBuffer);
-                break;
-            default:
-                throw new DBException(this.name + ": Unrecognized field type " + fieldType);
+            }
+            default -> throw new DBException(this.name + ": Unrecognized field type " + fieldType);
         }
 
         if (this.fieldArrayCount == this.fieldArraySize) {

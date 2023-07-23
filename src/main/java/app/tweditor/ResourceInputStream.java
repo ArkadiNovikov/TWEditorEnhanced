@@ -18,6 +18,7 @@ public class ResourceInputStream extends InputStream {
         this.in.skip(entry.getOffset());
     }
 
+    @Override
     public void close()
             throws IOException {
         if (this.in != null) {
@@ -29,10 +30,12 @@ public class ResourceInputStream extends InputStream {
         this.residualLength = 0;
     }
 
+    @Override
     public int available() {
         return this.residualLength;
     }
 
+    @Override
     public int read()
             throws IOException {
         if (this.in == null) {
@@ -51,11 +54,13 @@ public class ResourceInputStream extends InputStream {
         return b;
     }
 
+    @Override
     public int read(byte[] buffer)
             throws IOException {
         return read(buffer, 0, buffer.length);
     }
 
+    @Override
     public int read(byte[] buffer, int bufferOffset, int bufferLength)
             throws IOException {
         if (this.in == null) {
@@ -74,6 +79,7 @@ public class ResourceInputStream extends InputStream {
         return count;
     }
 
+    @Override
     public long skip(long count)
             throws IOException {
         if (this.in == null) {
@@ -84,6 +90,7 @@ public class ResourceInputStream extends InputStream {
         return skipped;
     }
 
+    @Override
     protected void finalize() {
         try {
             close();

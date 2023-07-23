@@ -1,6 +1,7 @@
 package app.tweditor;
 
 import java.awt.GridLayout;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -21,10 +22,10 @@ public class AttributesPanel extends JPanel
     private static final String[][][] databaseLabels = {{{"Strength1", "Strength2", "Strength3", "Strength4", "Strength5"}, {"Strength1 Upgrade1", "Strength2 Upgrade1", "Strength3 Upgrade1", "Strength4 Upgrade1", "Strength5 Upgrade1"}, {"Strength1 Upgrade2", "Strength2 Upgrade2", "Strength3 Upgrade2", "Strength4 Upgrade2", "Strength5 Upgrade2"}, {"", "Strength2 Upgrade3", "Strength3 Upgrade3", "Strength4 Upgrade3", ""}}, {{"Dexterity1", "Dexterity2", "Dexterity3", "Dexterity4", "Dexterity5"}, {"Dexterity1 Upgrade1", "Dexterity2 Upgrade1", "Dexterity3 Upgrade1", "Dexterity4 Upgrade1", "Dexterity5 Upgrade1"}, {"Dexterity1 Upgrade2", "Dexterity2 Upgrade2", "Dexterity3 Upgrade2", "Dexterity4 Upgrade2", "Dexterity5 Upgrade2"}, {"", "Dexterity2 Upgrade3", "Dexterity3 Upgrade3", "Dexterity4 Upgrade3", ""}}, {{"Endurance1", "Endurance2", "Endurance3", "Endurance4", "Endurance5"}, {"Endurance1 Upgrade1", "Endurance2 Upgrade1", "Endurance3 Upgrade1", "Endurance4 Upgrade1", "Endurance5 Upgrade1"}, {"Endurance1 Upgrade2", "Endurance2 Upgrade2", "Endurance3 Upgrade2", "Endurance4 Upgrade2", "Endurance5 Upgrade2"}, {"", "Endurance2 Upgrade3", "Endurance3 Upgrade3", "Endurance4 Upgrade3", ""}}, {{"Intelligence1", "Intelligence2", "Intelligence3", "Intelligence4", "Intelligence5"}, {"Intelligence1 Upgrade1", "Intelligence2 Upgrade1", "Intelligence3 Upgrade1", "Intelligence4 Upgrade1", "Intelligence5 Upgrade1"}, {"Intelligence1 Upgrade2", "Intelligence2 Upgrade2", "Intelligence3 Upgrade2", "Intelligence4 Upgrade2", "Intelligence5 Upgrade2"}, {"", "Intelligence2 Upgrade3", "Intelligence3 Upgrade3", "Intelligence4 Upgrade3", ""}}};
 
     private static final String[][] associatedLabels = {{"Dexterity1 Upgrade1", "Skinning"}, {"Intelligence2 Upgrade1", "HerbGathering"}, {"Intelligence2 Upgrade3", "GreaseMaking"}, {"Intelligence3 Upgrade1", "RitualOfPurify"}, {"Intelligence3 Upgrade2", "Anatomy"}, {"Intelligence3 Upgrade3", "BombMaking"}, {"Intelligence4 Upgrade2", "RitualOfLife"}};
-    private int[] levels;
-    private Map<String, JCheckBox> labelMap;
-    private JCheckBox[][][] fields;
-    private JTabbedPane tabbedPane;
+    private final int[] levels;
+    private final Map<String, JCheckBox> labelMap;
+    private final JCheckBox[][][] fields;
+    private final JTabbedPane tabbedPane;
 
     public AttributesPanel() {
         this.tabbedPane = new JTabbedPane();
@@ -133,11 +134,8 @@ public class AttributesPanel extends JPanel
                                 removeAbility = false;
                                 break;
                             }
-
                         }
-
                     }
-
                 }
 
                 if (removeAbility) {
@@ -181,7 +179,7 @@ public class AttributesPanel extends JPanel
             }
         } catch (DBException exc) {
             Main.logException("Unable to update database field", exc);
-        } catch (Throwable exc) {
+        } catch (HeadlessException | NumberFormatException exc) {
             Main.logException("Exception while processing action event", exc);
         }
     }

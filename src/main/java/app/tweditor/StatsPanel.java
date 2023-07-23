@@ -11,7 +11,7 @@ public class StatsPanel extends JPanel {
     private static final String[][] fieldNames = {{"Level", "Vitality", "Bronze Talents"}, {"Experience", "Endurance", "Silver Talents"}, {"Gold", "Toxicity", "Gold Talents"}};
 
     private static final String[][] databaseNames = {{"ExpLevel", "CurrentHitPoints", "TalentBronze"}, {"Experience", "CurrentEndurance", "TalentSilver"}, {"Gold", "CurrentToxicity", "TalentGold"}};
-    private NumericField[][] statFields;
+    private final NumericField[][] statFields;
 
     public StatsPanel() {
         super(new GridLayout(0, 3, 40, 0));

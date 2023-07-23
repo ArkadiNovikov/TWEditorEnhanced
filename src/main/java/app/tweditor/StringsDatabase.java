@@ -153,6 +153,7 @@ public class StringsDatabase {
         return heading != null ? heading : string;
     }
 
+    @Override
     protected void finalize() {
         try {
             if (this.in != null) {

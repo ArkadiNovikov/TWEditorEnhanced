@@ -3,8 +3,8 @@ package app.tweditor;
 public class InventoryItem
         implements Comparable<InventoryItem> {
 
-    private DBElement element;
-    private String name;
+    private final DBElement element;
+    private final String name;
     private int count;
 
     public InventoryItem(String name, DBElement element)
@@ -31,6 +31,7 @@ public class InventoryItem
         this.count = count;
     }
 
+    @Override
     public boolean equals(Object obj) {
         boolean equal = false;
         if ((obj != null) && ((obj instanceof InventoryItem))
@@ -41,6 +42,7 @@ public class InventoryItem
         return equal;
     }
 
+    @Override
     public int compareTo(InventoryItem obj) {
         int diff = this.name.compareTo(obj.getName());
         if (diff == 0) {
@@ -56,6 +58,7 @@ public class InventoryItem
         return diff;
     }
 
+    @Override
     public String toString() {
         return String.format("%s (%d)", new Object[]{this.name, Integer.valueOf(this.count)});
     }

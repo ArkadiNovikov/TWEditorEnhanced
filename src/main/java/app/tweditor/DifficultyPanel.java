@@ -18,8 +18,10 @@ public class DifficultyPanel extends JPanel
     private final int EASY_INT = 0;
     private final int MEDIUM_INT = 1;
     private final int HARD_INT = 2;
+    private final JRadioButton easyButton;
 
-    private JRadioButton easyButton, mediumButton, hardButton;
+    private final JRadioButton mediumButton;
+    private final JRadioButton hardButton;
     private String level;
 
     public DifficultyPanel() {
@@ -61,12 +63,10 @@ public class DifficultyPanel extends JPanel
                     DBElement e = fieldList.getElement(0);
                     Object value = e.getValue();
                     if (value.equals(EASY_DIFF) || value.equals(MEDIUM_DIFF)) {
-                        if (cmd.equals(EASY)) {
-                            fieldList.setString("RnAbName", EASY_DIFF);
-                        } else if (cmd.equals(MEDIUM)) {
-                            fieldList.setString("RnAbName", MEDIUM_DIFF);
-                        } else {
-                            abilityList.removeElement(i);
+                        switch (cmd) {
+                            case EASY -> fieldList.setString("RnAbName", EASY_DIFF);
+                            case MEDIUM -> fieldList.setString("RnAbName", MEDIUM_DIFF);
+                            default -> abilityList.removeElement(i);
                         }
 
                         break;
@@ -85,7 +85,7 @@ public class DifficultyPanel extends JPanel
                         } else if (cmd.equals(MEDIUM)) {
                             levelList.addElement(new DBElement(10, 0, "RnAbName", MEDIUM_DIFF));
                         }
-                        levelList.addElement(new DBElement(0, 0, "RnAbStk", new Integer(0)));
+                        levelList.addElement(new DBElement(0, 0, "RnAbStk", 0));
 
                         abilityList.insertElement(i + 1, new DBElement(14, 48879, "", levelList));
                         break;
@@ -104,12 +104,10 @@ public class DifficultyPanel extends JPanel
 
     private void processGameDiffSetting(DBList list, String cmd) {
         try {
-            if (cmd.equals(EASY)) {
-                list.setInteger("GameDiffSetting", EASY_INT);
-            } else if (cmd.equals(MEDIUM)) {
-                list.setInteger("GameDiffSetting", MEDIUM_INT);
-            } else {
-                list.setInteger("GameDiffSetting", HARD_INT);
+            switch (cmd) {
+                case EASY -> list.setInteger("GameDiffSetting", EASY_INT);
+                case MEDIUM -> list.setInteger("GameDiffSetting", MEDIUM_INT);
+                default -> list.setInteger("GameDiffSetting", HARD_INT);
             }
         } catch (DBException exc) {
             Main.logException("Unable to update database field", exc);
@@ -118,6 +116,7 @@ public class DifficultyPanel extends JPanel
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
         if ((!(ae.getSource() instanceof JRadioButton)) || (Main.dataChanging)) {
             return;

@@ -48,15 +48,15 @@ public class InventoryPanel extends JPanel
 
     private static final String[] substanceNames = {"Vitriol", "Rebis", "Aether", "Quebirth", "Hydragenum", "Vermilion", "Albedo", "Nigredo", "Rubedo"};
     private DefaultListModel itemsModel;
-    private JList itemsField;
-    private DefaultMutableTreeNode rootNode;
-    private CategoryNode[] categoryNodes;
-    private DefaultTreeModel availModel;
-    private JTree availField;
+    private final JList itemsField;
+    private final DefaultMutableTreeNode rootNode;
+    private final CategoryNode[] categoryNodes;
+    private final DefaultTreeModel availModel;
+    private final JTree availField;
     private boolean availDone = false;
     private List<AlchemyIngredient> ingredients;
     private Map<Integer, AlchemyIngredient> ingredientsMap;
-    private boolean[][] slots;
+    private final boolean[][] slots;
 
     public InventoryPanel() {
         this.slots = new boolean[6][14];
@@ -125,17 +125,17 @@ public class InventoryPanel extends JPanel
         add(availPane);
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
         try {
             String action = ae.getActionCommand();
-            if (action.equals("examine available item")) {
-                examineAvailableItem();
-            } else if (action.equals("examine current item")) {
-                examineCurrentItem();
-            } else if (action.equals("add available item")) {
-                addSelectedItem();
-            } else if (action.equals("remove current item")) {
-                removeSelectedItem();
+            switch (action) {
+                case "examine available item" -> examineAvailableItem();
+                case "examine current item" -> examineCurrentItem();
+                case "add available item" -> addSelectedItem();
+                case "remove current item" -> removeSelectedItem();
+                default -> {
+                }
             }
         } catch (DBException exc) {
             Main.logException("Unable to process database field", exc);
@@ -197,7 +197,7 @@ public class InventoryPanel extends JPanel
 
         int alchemyID = fieldList.getInteger("AlchIngredient");
         if (alchemyID > 0) {
-            AlchemyIngredient ingredient = (AlchemyIngredient) this.ingredientsMap.get(new Integer(alchemyID));
+            AlchemyIngredient ingredient = (AlchemyIngredient) this.ingredientsMap.get(alchemyID);
             if (ingredient != null) {
                 description.append("<br><ul>");
                 List substances = ingredient.getSubstances();
@@ -390,7 +390,7 @@ public class InventoryPanel extends JPanel
                     }
                     AlchemyIngredient ingredient = new AlchemyIngredient(i, substances);
                     this.ingredients.add(ingredient);
-                    this.ingredientsMap.put(new Integer(ingredient.getID()), ingredient);
+                    this.ingredientsMap.put(ingredient.getID(), ingredient);
                 }
 
             }

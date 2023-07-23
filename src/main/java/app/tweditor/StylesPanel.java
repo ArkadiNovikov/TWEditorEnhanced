@@ -1,6 +1,7 @@
 package app.tweditor;
 
 import java.awt.GridLayout;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -19,10 +20,10 @@ public class StylesPanel extends JPanel
     private static final String[][][] fieldNames = {{{"Level 1", "Level 2", "Level 3", "Level 4", "Level 5"}, {"Cut at the Jugular I", "Cut at the Jugular II", "Cut at the Jugular III", "", ""}, {"Crushing Blow I", "Crushing Blow II", "Crushing Blow III", "", ""}, {"Bloody Rage I", "Bloody Rage II", "Bloody Rage III", "", ""}}, {{"Level 1", "Level 2", "Level 3", "Level 4", "Level 5"}, {"Paralysis I", "Paralysis II", "Paralysis III", "", ""}, {"Hail of Blows I", "Hail of Blows II", "Hail of Blows III", "", ""}, {"Sever Sinews I", "Sever Sinews II", "Sever Sinews III", "", ""}}, {{"Level 1", "Level 2", "Level 3", "Level 4", "Level 5"}, {"Precise Hit I", "Precise Hit II", "Precise Hit III", "", ""}, {"Half-Spin I", "Half-Spin II", "Half-Spin III", "", ""}, {"Trip I", "Trip II", "Trip III", "", ""}}, {{"Level 1", "Level 2", "Level 3", "Level 4", "Level 5"}, {"Deep Cut I", "Deep Cut II", "Deep Cut III", "", ""}, {"Mortal Blow I", "Mortal Blow II", "Mortal Blow III", "", ""}, {"Patinado I", "Patinado II", "Patinado III", "", ""}}, {{"Level 1", "Level 2", "Level 3", "Level 4", "Level 5"}, {"Crippling Pain I", "Crippling Pain II", "Crippling Pain III", "", ""}, {"Flash Cuts I", "Flash Cuts II", "Flash Cuts III", "", ""}, {"Sinister I", "Sinister II", "Sinister III", "", ""}}, {{"Level 1", "Level 2", "Level 3", "Level 4", "Level 5"}, {"Critical Hit I", "Critical Hit II", "Critical Hit III", "", ""}, {"Tempest I", "Tempest II", "Tempest III", "", ""}, {"Tempest I", "Tempest II", "Tempest III", "", ""}}};
 
     private static final String[][][] databaseLabels = {{{"StyleSteelStrong1", "StyleSteelStrong2", "StyleSteelStrong3", "StyleSteelStrong4", "StyleSteelStrong5"}, {"StyleSteelStrong1 Upgrade1", "StyleSteelStrong2 Upgrade1", "StyleSteelStrong3 Upgrade1", "", ""}, {"StyleSteelStrong1 Upgrade2", "StyleSteelStrong2 Upgrade2", "StyleSteelStrong3 Upgrade2", "", ""}, {"StyleSteelStrong1 Upgrade3", "StyleSteelStrong2 Upgrade3", "StyleSteelStrong3 Upgrade3", "", ""}}, {{"StyleSteelFast1", "StyleSteelFast2", "StyleSteelFast3", "StyleSteelFast4", "StyleSteelFast5"}, {"StyleSteelFast1 Upgrade1", "StyleSteelFast2 Upgrade1", "StyleSteelFast3 Upgrade1", "", ""}, {"StyleSteelFast1 Upgrade2", "StyleSteelFast2 Upgrade2", "StyleSteelFast3 Upgrade2", "", ""}, {"StyleSteelFast1 Upgrade3", "StyleSteelFast2 Upgrade3", "StyleSteelFast3 Upgrade3", "", ""}}, {{"StyleSteelGroup1", "StyleSteelGroup2", "StyleSteelGroup3", "StyleSteelGroup4", "StyleSteelGroup5"}, {"StyleSteelGroup1 Upgrade1", "StyleSteelGroup2 Upgrade1", "StyleSteelGroup3 Upgrade1", "", ""}, {"StyleSteelGroup1 Upgrade2", "StyleSteelGroup2 Upgrade2", "StyleSteelGroup3 Upgrade2", "", ""}, {"StyleSteelGroup1 Upgrade3", "StyleSteelGroup2 Upgrade3", "StyleSteelGroup3 Upgrade3", "", ""}}, {{"StyleSilverStrong1", "StyleSilverStrong2", "StyleSilverStrong3", "StyleSilverStrong4", "StyleSilverStrong5"}, {"StyleSilverStrong1 Upgrade1", "StyleSilverStrong2 Upgrade1", "StyleSilverStrong3 Upgrade1", "", ""}, {"StyleSilverStrong1 Upgrade2", "StyleSilverStrong2 Upgrade2", "StyleSilverStrong3 Upgrade2", "", ""}, {"StyleSilverStrong1 Upgrade3", "StyleSilverStrong2 Upgrade3", "StyleSilverStrong3 Upgrade3", "", ""}}, {{"StyleSilverFast1", "StyleSilverFast2", "StyleSilverFast3", "StyleSilverFast4", "StyleSilverFast5"}, {"StyleSilverFast1 Upgrade1", "StyleSilverFast2 Upgrade1", "StyleSilverFast3 Upgrade1", "", ""}, {"StyleSilverFast1 Upgrade2", "StyleSilverFast2 Upgrade2", "StyleSilverFast3 Upgrade2", "", ""}, {"StyleSilverFast1 Upgrade3", "StyleSilverFast2 Upgrade3", "StyleSilverFast3 Upgrade3", "", ""}}, {{"StyleSilverGroup1", "StyleSilverGroup2", "StyleSilverGroup3", "StyleSilverGroup4", "StyleSilverGroup5"}, {"StyleSilverGroup1 Upgrade1", "StyleSilverGroup2 Upgrade1", "StyleSilverGroup3 Upgrade1", "", ""}, {"StyleSilverGroup1 Upgrade2", "StyleSilverGroup2 Upgrade2", "StyleSilverGroup3 Upgrade2", "", ""}, {"StyleSilverGroup1 Upgrade3", "StyleSilverGroup2 Upgrade3", "StyleSilverGroup3 Upgrade3", "", ""}}};
-    private int[] levels;
-    private Map<String, JCheckBox> labelMap;
-    private JCheckBox[][][] fields;
-    private JTabbedPane tabbedPane;
+    private final int[] levels;
+    private final Map<String, JCheckBox> labelMap;
+    private final JCheckBox[][][] fields;
+    private final JTabbedPane tabbedPane;
 
     public StylesPanel() {
         this.tabbedPane = new JTabbedPane();
@@ -55,6 +56,7 @@ public class StylesPanel extends JPanel
         add(this.tabbedPane);
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
         if ((!(ae.getSource() instanceof JCheckBox)) || (Main.dataChanging)) {
             return;
@@ -90,7 +92,7 @@ public class StylesPanel extends JPanel
                 if (addAbility) {
                     DBList fieldList = new DBList(2);
                     fieldList.addElement(new DBElement(10, 0, "RnAbName", abilityLabel));
-                    fieldList.addElement(new DBElement(0, 0, "RnAbStk", new Integer(0)));
+                    fieldList.addElement(new DBElement(0, 0, "RnAbStk", 0));
                     list.addElement(new DBElement(14, 48879, "", fieldList));
 
                     if ((row == 0) && (col > this.levels[tab])) {
@@ -149,7 +151,7 @@ public class StylesPanel extends JPanel
             }
         } catch (DBException exc) {
             Main.logException("Unable to update database field", exc);
-        } catch (Throwable exc) {
+        } catch (HeadlessException | NumberFormatException exc) {
             Main.logException("Exception while processing action event", exc);
         }
     }

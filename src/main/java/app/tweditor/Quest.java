@@ -6,8 +6,8 @@ public class Quest {
     public static final int QUEST_STARTED = 1;
     public static final int QUEST_COMPLETED = 2;
     public static final int QUEST_FAILED = 3;
-    private String resourceName;
-    private DBElement questElement;
+    private final String resourceName;
+    private final DBElement questElement;
     private String questName;
     private int questState;
     private boolean questModified = false;
@@ -69,6 +69,7 @@ public class Quest {
         return this.questElement;
     }
 
+    @Override
     public String toString() {
         return this.questName;
     }

@@ -38,8 +38,7 @@ public class ResourceDatabase {
 
     public void load()
             throws DBException, IOException {
-        RandomAccessFile in = new RandomAccessFile(this.file, "r");
-        try {
+        try (RandomAccessFile in = new RandomAccessFile(this.file, "r")) {
             byte[] header = new byte[' '];
             int count = in.read(header);
             if (count != 160) {
@@ -139,7 +138,7 @@ public class ResourceDatabase {
                     for (count = 0; (count < nameLength)
                             && (key[count] != 0); count++);
                     resourceNames.add(new String(key, 0, count));
-                    resourceTypes.add(new Integer(getShort(key, nameLength + 4)));
+                    resourceTypes.add(getShort(key, nameLength + 4));
                 }
 
             }
@@ -155,7 +154,7 @@ public class ResourceDatabase {
                     long offset = getInteger(element, 0);
                     int length = getInteger(element, 4);
                     String resourceName = (String) resourceNames.get(i);
-                    int resourceType = ((Integer) resourceTypes.get(i)).intValue();
+                    int resourceType = ((Integer) resourceTypes.get(i));
                     if ((resourceName.length() > 0) && (resourceType != 65535)) {
                         ResourceEntry entry = new ResourceEntry(resourceName, resourceType, this.file, offset, length);
                         this.entries.add(entry);
@@ -163,8 +162,6 @@ public class ResourceDatabase {
                     }
                 }
             }
-        } finally {
-            in.close();
         }
     }
 
@@ -268,9 +265,7 @@ public class ResourceDatabase {
             calendar.setTime(new Date());
 
             byte[] typeBytes = this.databaseType.getBytes();
-            for (int i = 0; i < 4; i++) {
-                header[i] = typeBytes[i];
-            }
+            System.arraycopy(typeBytes, 0, header, 0, 4);
             byte[] versionBytes = this.databaseVersion.getBytes();
             for (int i = 0; i < 4; i++) {
                 header[(i + 4)] = versionBytes[i];
@@ -438,6 +433,7 @@ public class ResourceDatabase {
         buffer[(offset + 3)] = ((byte) (number >>> 24));
     }
 
+    @Override
     public String toString() {
         return this.file.getPath();
     }

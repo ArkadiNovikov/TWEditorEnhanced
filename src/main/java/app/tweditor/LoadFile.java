@@ -10,8 +10,8 @@ import javax.swing.SwingUtilities;
 
 public class LoadFile extends Thread {
 
-    private ProgressDialog progressDialog;
-    private File file;
+    private final ProgressDialog progressDialog;
+    private final File file;
     private boolean loadSuccessful = false;
 
     public LoadFile(ProgressDialog dialog, File file) {
@@ -19,6 +19,7 @@ public class LoadFile extends Thread {
         this.file = file;
     }
 
+    @Override
     public void run() {
         InputStream in = null;
         FileOutputStream out = null;
@@ -219,6 +220,7 @@ public class LoadFile extends Thread {
         }
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 LoadFile.this.progressDialog.closeDialog(LoadFile.this.loadSuccessful);
             }

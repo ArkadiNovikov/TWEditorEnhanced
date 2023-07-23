@@ -66,6 +66,7 @@ public class LocalizedString extends DBElementValue
         return value;
     }
 
+    @Override
     public Object clone() {
         Object clonedObject = super.clone();
         LocalizedString clonedString = (LocalizedString) clonedObject;

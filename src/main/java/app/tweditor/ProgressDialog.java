@@ -11,8 +11,8 @@ import javax.swing.SwingUtilities;
 
 public class ProgressDialog extends JDialog {
 
-    private JFrame parent;
-    private JProgressBar progressBar;
+    private final JFrame parent;
+    private final JProgressBar progressBar;
     private int deferredProgress;
     private boolean success = false;
 
@@ -54,6 +54,7 @@ public class ProgressDialog extends JDialog {
         } else {
             this.deferredProgress = progress;
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     ProgressDialog.this.progressBar.setValue(ProgressDialog.this.deferredProgress);
                 }

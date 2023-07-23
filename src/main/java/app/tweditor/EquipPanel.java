@@ -8,7 +8,6 @@ import java.io.IOException;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -30,11 +29,11 @@ public class EquipPanel extends JPanel
     private static final int TAB_TROPHY = 3;
     private static final int[][] categoryMappings = {{1, 2}, {2, 1}, {29, 0}, {39, 3}};
     private DefaultListModel itemsModel;
-    private JList itemsField;
-    private DefaultMutableTreeNode rootNode;
-    private CategoryNode[] categoryNodes;
-    private DefaultTreeModel availModel;
-    private JTree availField;
+    private final JList itemsField;
+    private final DefaultMutableTreeNode rootNode;
+    private final CategoryNode[] categoryNodes;
+    private final DefaultTreeModel availModel;
+    private final JTree availField;
     private boolean availDone = false;
 
     public EquipPanel() {
@@ -102,17 +101,17 @@ public class EquipPanel extends JPanel
         add(availPane);
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
         try {
             String action = ae.getActionCommand();
-            if (action.equals("examine available item")) {
-                examineAvailableItem();
-            } else if (action.equals("examine current item")) {
-                examineCurrentItem();
-            } else if (action.equals("add available item")) {
-                addSelectedItem();
-            } else if (action.equals("remove current item")) {
-                removeSelectedItem();
+            switch (action) {
+                case "examine available item" -> examineAvailableItem();
+                case "examine current item" -> examineCurrentItem();
+                case "add available item" -> addSelectedItem();
+                case "remove current item" -> removeSelectedItem();
+                default -> {
+                }
             }
         } catch (DBException exc) {
             Main.logException("Unable to process database field", exc);
@@ -316,7 +315,7 @@ public class EquipPanel extends JPanel
         }
 
         for (int i = 0; i < itemCount; i++) {
-            DBElement itemElement = itemList.getElement(i);
+            var itemElement = itemList.getElement(i);
             DBList itemFields = (DBList) itemElement.getValue();
             String itemName = itemFields.getString("LocalizedName");
             if ((itemName.length() > 0) && (itemFields.getInteger("BaseItem") != 36)) {

@@ -1,5 +1,6 @@
 package app.tweditor;
 
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -16,15 +17,15 @@ import javax.swing.JTabbedPane;
 public class QuestsPanel extends JPanel
         implements ActionListener {
 
-    private JTabbedPane tabbedPane;
+    private final JTabbedPane tabbedPane;
     private List<Quest> startedList;
-    private JList startedField;
+    private final JList startedField;
     private List<Quest> completedList;
-    private JList completedField;
+    private final JList completedField;
     private List<Quest> failedList;
-    private JList failedField;
+    private final JList failedField;
     private List<Quest> notStartedList;
-    private JList notStartedField;
+    private final JList notStartedField;
 
     public QuestsPanel() {
         this.tabbedPane = new JTabbedPane(2);
@@ -103,6 +104,7 @@ public class QuestsPanel extends JPanel
         add(this.tabbedPane);
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
         try {
             String action = ae.getActionCommand();
@@ -138,7 +140,7 @@ public class QuestsPanel extends JPanel
             }
         } catch (DBException exc) {
             Main.logException("Unable to access database field", exc);
-        } catch (Throwable exc) {
+        } catch (HeadlessException exc) {
             Main.logException("Exception while processing action event", exc);
         }
     }
@@ -234,17 +236,10 @@ public class QuestsPanel extends JPanel
 
         for (Quest quest : Main.quests) {
             switch (quest.getQuestState()) {
-                case 1:
-                    insertItem(this.startedList, quest);
-                    break;
-                case 2:
-                    insertItem(this.completedList, quest);
-                    break;
-                case 3:
-                    insertItem(this.failedList, quest);
-                    break;
-                case 0:
-                    insertItem(this.notStartedList, quest);
+                case 1 -> insertItem(this.startedList, quest);
+                case 2 -> insertItem(this.completedList, quest);
+                case 3 -> insertItem(this.failedList, quest);
+                case 0 -> insertItem(this.notStartedList, quest);
             }
 
         }

@@ -1,6 +1,7 @@
 package app.tweditor;
 
 import java.awt.GridLayout;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -21,10 +22,10 @@ public class SignsPanel extends JPanel
     private static final String[][][] databaseLabels = {{{"Aard1", "Aard2", "Aard3", "Aard4", "Aard5"}, {"Aard1 Powerup", "Aard2 Powerup", "Aard3 Powerup", "Aard4 Powerup", "Aard5 Powerup"}, {"Aard1 Upgrade1", "Aard2 Upgrade1", "Aard3 Upgrade1", "Aard4 Upgrade1", "Aard5 Upgrade1"}, {"", "Aard2 Upgrade2", "Aard3 Upgrade2", "Aard4 Upgrade2", ""}}, {{"Igni1", "Igni2", "Igni3", "Igni4", "Igni5"}, {"Igni1 Powerup", "Igni2 Powerup", "Igni3 Powerup", "Igni4 Powerup", "Igni5 Powerup"}, {"Igni1 Upgrade1", "Igni2 Upgrade1", "Igni3 Upgrade1", "Igni4 Upgrade1", "Igni5 Upgrade1"}, {"", "Igni2 Upgrade2", "Igni3 Upgrade2", "Igni4 Upgrade2", ""}}, {{"Quen1", "Quen2", "Quen3", "Quen4", "Quen5"}, {"Quen1 Powerup", "Quen2 Powerup", "Quen3 Powerup", "Quen4 Powerup", "Quen5 Powerup"}, {"Quen1 Upgrade1", "Quen2 Upgrade1", "Quen3 Upgrade1", "Quen4 Upgrade1", "Quen5 Upgrade1"}, {"", "Quen2 Upgrade2", "Quen3 Upgrade2", "Quen4 Upgrade2", ""}}, {{"Axi1", "Axi2", "Axi3", "Axi4", "Axi5"}, {"Axi1 Powerup", "Axi2 Powerup", "Axi3 Powerup", "Axi4 Powerup", "Axi5 Powerup"}, {"Axi1 Upgrade1", "Axi2 Upgrade1", "Axi3 Upgrade1", "Axi4 Upgrade1", "Axi5 Upgrade1"}, {"", "Axi2 Upgrade2", "Axi3 Upgrade2", "Axi4 Upgrade2", ""}}, {{"Yrden1", "Yrden2", "Yrden3", "Yrden4", "Yrden5"}, {"Yrden1 Powerup", "Yrden2 Powerup", "Yrden3 Powerup", "Yrden4 Powerup", "Yrden5 Powerup"}, {"Yrden1 Upgrade1", "Yrden2 Upgrade1", "Yrden3 Upgrade1", "Yrden4 Upgrade1", "Yrden5 Upgrade1"}, {"", "Yrden2 Upgrade2", "Yrden3 Upgrade2", "Yrden4 Upgrade2", ""}}};
 
     private static final int[] associatedSpells = {0, 3, 1, 4, 2};
-    private int[][] signLevels;
-    private Map<String, JCheckBox> labelMap;
-    private JCheckBox[][][] fields;
-    private JTabbedPane tabbedPane;
+    private final int[][] signLevels;
+    private final Map<String, JCheckBox> labelMap;
+    private final JCheckBox[][][] fields;
+    private final JTabbedPane tabbedPane;
 
     public SignsPanel() {
         this.tabbedPane = new JTabbedPane();
@@ -57,6 +58,7 @@ public class SignsPanel extends JPanel
         add(this.tabbedPane);
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
         if ((!(ae.getSource() instanceof JCheckBox)) || (Main.dataChanging)) {
             return;
@@ -99,7 +101,7 @@ public class SignsPanel extends JPanel
                 if (addSign) {
                     DBList fieldList = new DBList(2);
                     fieldList.addElement(new DBElement(10, 0, "RnAbName", abilityLabel));
-                    fieldList.addElement(new DBElement(0, 0, "RnAbStk", new Integer(0)));
+                    fieldList.addElement(new DBElement(0, 0, "RnAbStk", 0));
                     list.addElement(new DBElement(14, 48879, "", fieldList));
 
                     if ((row < 2) && (col > this.signLevels[tab][row])) {
@@ -129,7 +131,7 @@ public class SignsPanel extends JPanel
                             }
 
                             fieldList = new DBList(1);
-                            element = new DBElement(2, 0, "Spell", new Integer(low + 2 * col + row));
+                            element = new DBElement(2, 0, "Spell", low + 2 * col + row);
                             fieldList.addElement(element);
                             list.addElement(new DBElement(14, 2, "", fieldList));
                         }
@@ -215,7 +217,7 @@ public class SignsPanel extends JPanel
             }
         } catch (DBException exc) {
             Main.logException("Unable to update database field", exc);
-        } catch (Throwable exc) {
+        } catch (HeadlessException | NumberFormatException exc) {
             Main.logException("Exception while processing action event", exc);
         }
     }
