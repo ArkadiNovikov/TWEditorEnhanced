@@ -2,25 +2,21 @@ package app.tweditor;
 
 import java.util.List;
 
-public class AlchemyIngredient
-{
-  private int id;
-  private List<String> substances;
+public class AlchemyIngredient {
 
-  public AlchemyIngredient(int id, List<String> substances)
-  {
-    this.id = id;
-    this.substances = substances;
-  }
+    private int id;
+    private List<String> substances;
 
-  public int getID()
-  {
-    return this.id;
-  }
+    public AlchemyIngredient(int id, List<String> substances) {
+        this.id = id;
+        this.substances = substances;
+    }
 
-  public List<String> getSubstances()
-  {
-    return this.substances;
-  }
+    public int getID() {
+        return this.id;
+    }
+
+    public List<String> getSubstances() {
+        return this.substances;
+    }
 }
-
