@@ -9,13 +9,17 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Database {
-
+    @Getter
     private File file;
+    @Getter @Setter
     private String name;
     private String fileType;
     private String fileVersion;
+    @Getter
     private DBElement topLevelStruct;
     private byte[] structBuffer;
     private int structArraySize;
@@ -49,18 +53,6 @@ public class Database {
         this.name = file.getName();
     }
 
-    public File getFile() {
-        return this.file;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getType() {
         return this.fileType;
     }
@@ -81,10 +73,6 @@ public class Database {
             throw new IllegalArgumentException("File version " + version + " is not supported");
         }
         this.fileVersion = version;
-    }
-
-    public DBElement getTopLevelStruct() {
-        return this.topLevelStruct;
     }
 
     public void setTopLevelStruct(DBElement struct) {

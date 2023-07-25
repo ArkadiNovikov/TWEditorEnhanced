@@ -390,7 +390,7 @@ public class InventoryPanel extends JPanel
                     }
                     AlchemyIngredient ingredient = new AlchemyIngredient(i, substances);
                     this.ingredients.add(ingredient);
-                    this.ingredientsMap.put(ingredient.getID(), ingredient);
+                    this.ingredientsMap.put(ingredient.getId(), ingredient);
                 }
 
             }

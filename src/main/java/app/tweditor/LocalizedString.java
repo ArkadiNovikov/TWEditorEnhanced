@@ -3,10 +3,13 @@ package app.tweditor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import lombok.Getter;
+import lombok.Setter;
 
 public class LocalizedString extends DBElementValue
         implements Cloneable {
 
+    @Getter @Setter
     private int stringReference;
     private List<LocalizedSubstring> substringList;
 
@@ -32,14 +35,6 @@ public class LocalizedString extends DBElementValue
         if (!found) {
             this.substringList.add(substring);
         }
-    }
-
-    public int getStringReference() {
-        return this.stringReference;
-    }
-
-    public void setStringReference(int reference) {
-        this.stringReference = reference;
     }
 
     public int getSubstringCount() {

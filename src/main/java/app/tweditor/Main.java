@@ -79,13 +79,14 @@ public class Main {
                 useShellFolder = false;
             }
 
-            installPath = System.getProperty("TW.install.path");
+            installPath = "G:\\SteamLibrary\\steamapps\\common\\The Witcher Enhanced Edition";//System.getProperty("TW.install.path");
             String languageString = System.getProperty("TW.language");
             if (languageString != null) {
                 languageID = Integer.parseInt(languageString);
             } else {
                 languageID = -1;
             }
+            languageID = 3;
             if ((installPath == null) || (languageID == -1)) {
                 if (osMac) {
                     installPath = "/Applications/The Witcher.app/Contents/Resources/drive_c/Program Files/The Witcher";
@@ -194,7 +195,7 @@ public class Main {
             properties.setProperty("java.version", System.getProperty("java.version"));
             properties.setProperty("java.home", System.getProperty("java.home"));
             properties.setProperty("os.name", System.getProperty("os.name"));
-            properties.setProperty("sun.os.patch.level", System.getProperty("sun.os.patch.level"));
+            //properties.setProperty("sun.os.patch.level", System.getProperty("sun.os.patch.level"));
             properties.setProperty("user.name", System.getProperty("user.name"));
             properties.setProperty("user.home", System.getProperty("user.home"));
             properties.setProperty("install.path", installPath);

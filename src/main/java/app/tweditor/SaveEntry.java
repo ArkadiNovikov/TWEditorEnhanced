@@ -9,16 +9,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 public class SaveEntry {
 
     private boolean onDisk;
     private final boolean compressed;
+    @Getter
     private final String resourceName;
+    @Getter
     private final String resourcePath;
+    @Getter
     private File resourceFile;
+    @Getter @Setter
     private long resourceOffset;
+    @Getter @Setter
     private int resourceLength;
+    @Getter
     private List<byte[]> resourceDataList;
 
     public SaveEntry(String path) {
@@ -57,14 +65,6 @@ public class SaveEntry {
         }
     }
 
-    public String getResourceName() {
-        return this.resourceName;
-    }
-
-    public String getResourcePath() {
-        return this.resourcePath;
-    }
-
     public boolean isOnDisk() {
         return this.onDisk;
     }
@@ -86,36 +86,12 @@ public class SaveEntry {
         return this.compressed;
     }
 
-    public File getResourceFile() {
-        return this.resourceFile;
-    }
-
     public void setResourceFile(File file, int offset, int length) {
         this.resourceFile = file;
         this.resourceOffset = offset;
         this.resourceLength = length;
         this.resourceDataList = null;
         this.onDisk = true;
-    }
-
-    public long getResourceOffset() {
-        return this.resourceOffset;
-    }
-
-    public void setResourceOffset(long offset) {
-        this.resourceOffset = offset;
-    }
-
-    public int getResourceLength() {
-        return this.resourceLength;
-    }
-
-    public void setResourceLength(int length) {
-        this.resourceLength = length;
-    }
-
-    public List<byte[]> getResourceDataList() {
-        return this.resourceDataList;
     }
 
     public InputStream getInputStream()

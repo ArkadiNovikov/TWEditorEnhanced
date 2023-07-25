@@ -1,10 +1,15 @@
 package app.tweditor;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class InventoryItem
         implements Comparable<InventoryItem> {
-
+    @Getter
     private final DBElement element;
+    @Getter
     private final String name;
+    @Getter @Setter
     private int count;
 
     public InventoryItem(String name, DBElement element)
@@ -13,22 +18,6 @@ public class InventoryItem
         this.element = element;
         DBList fieldList = (DBList) element.getValue();
         this.count = fieldList.getInteger("StackSize");
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public DBElement getElement() {
-        return this.element;
-    }
-
-    public int getCount() {
-        return this.count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
     }
 
     @Override

@@ -12,12 +12,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 public class SaveDatabase {
 
+    @Getter
     private final File file;
     private final String saveName;
     private int dataOffset;
+    @Getter
     private final List<SaveEntry> entries = new ArrayList<>(160);
     private final Map<String, SaveEntry> entryMap = new HashMap<>(160);
 
@@ -196,16 +199,8 @@ public class SaveDatabase {
         return this.saveName;
     }
 
-    public File getFile() {
-        return this.file;
-    }
-
     public String getPath() {
         return this.file.getPath();
-    }
-
-    public List<SaveEntry> getEntries() {
-        return this.entries;
     }
 
     public SaveEntry getEntry(String resourceName) {

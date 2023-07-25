@@ -109,34 +109,49 @@ public class QuestsPanel extends JPanel
         try {
             String action = ae.getActionCommand();
 
-            if (action.equals("examine started")) {
-                int sel = this.startedField.getSelectedIndex();
-                if (sel < 0) {
-                    JOptionPane.showMessageDialog(this, "You must select a quest to examine", "No quest selected", 0);
-                } else {
-                    examineQuest((Quest) this.startedList.get(sel));
-                }
-            } else if (action.equals("examine completed")) {
-                int sel = this.completedField.getSelectedIndex();
-                if (sel < 0) {
-                    JOptionPane.showMessageDialog(this, "You must select a quest to examine", "No quest selected", 0);
-                } else {
-                    examineQuest((Quest) this.completedList.get(sel));
-                }
-            } else if (action.equals("examine failed")) {
-                int sel = this.failedField.getSelectedIndex();
-                if (sel < 0) {
-                    JOptionPane.showMessageDialog(this, "You must select a quest to examine", "No quest selected", 0);
-                } else {
-                    examineQuest((Quest) this.failedList.get(sel));
-                }
-            } else if (action.equals("examine not started")) {
-                int sel = this.notStartedField.getSelectedIndex();
-                if (sel < 0) {
-                    JOptionPane.showMessageDialog(this, "You must select a quest to examine", "No quest selected", 0);
-                } else {
-                    examineQuest((Quest) this.notStartedList.get(sel));
-                }
+            switch (action) {
+                case "examine started":
+                    {
+                        int sel = this.startedField.getSelectedIndex();
+                        if (sel < 0) {
+                            JOptionPane.showMessageDialog(this, "You must select a quest to examine", "No quest selected", 0);
+                        } else {
+                            examineQuest((Quest) this.startedList.get(sel));
+                        }
+                        break;
+                    }
+                case "examine completed":
+                    {
+                        int sel = this.completedField.getSelectedIndex();
+                        if (sel < 0) {
+                            JOptionPane.showMessageDialog(this, "You must select a quest to examine", "No quest selected", 0);
+                        } else {
+                            examineQuest((Quest) this.completedList.get(sel));
+                        }
+                        break;
+                    }
+                case "examine failed":
+                    {
+                        int sel = this.failedField.getSelectedIndex();
+                        if (sel < 0) {
+                            JOptionPane.showMessageDialog(this, "You must select a quest to examine", "No quest selected", 0);
+                        } else {
+                            examineQuest((Quest) this.failedList.get(sel));
+                        }
+                        break;
+                    }
+                case "examine not started":
+                    {
+                        int sel = this.notStartedField.getSelectedIndex();
+                        if (sel < 0) {
+                            JOptionPane.showMessageDialog(this, "You must select a quest to examine", "No quest selected", 0);
+                        } else {
+                            examineQuest((Quest) this.notStartedList.get(sel));
+                        }
+                        break;
+                    }
+                default:
+                    break;
             }
         } catch (DBException exc) {
             Main.logException("Unable to access database field", exc);

@@ -33,8 +33,7 @@ public class UnpackSave extends Thread {
                 SaveEntry entry = (SaveEntry) entryObj;
                 String resourceName = entry.getResourceName();
                 file = new File(this.dirFile.getPath() + Main.fileSeparator + resourceName);
-                if ((file.exists())
-                        && (!file.delete())) {
+                if ((file.exists()) && (!file.delete())) {
                     throw new IOException("Unable to delete '" + file.getName() + "'");
                 }
                 out = new FileOutputStream(file);

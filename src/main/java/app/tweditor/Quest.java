@@ -1,14 +1,21 @@
 package app.tweditor;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class Quest {
 
     public static final int QUEST_NOT_STARTED = 0;
     public static final int QUEST_STARTED = 1;
     public static final int QUEST_COMPLETED = 2;
     public static final int QUEST_FAILED = 3;
+    @Getter
     private final String resourceName;
+    @Getter
     private final DBElement questElement;
+    @Getter
     private String questName;
+    @Getter
     private int questState;
     private boolean questModified = false;
 
@@ -45,28 +52,12 @@ public class Quest {
         }
     }
 
-    public String getResourceName() {
-        return this.resourceName;
-    }
-
-    public String getQuestName() {
-        return this.questName;
-    }
-
-    public int getQuestState() {
-        return this.questState;
-    }
-
     public boolean isModified() {
         return this.questModified;
     }
 
     public void setModified(boolean modified) {
         this.questModified = modified;
-    }
-
-    public DBElement getQuestElement() {
-        return this.questElement;
     }
 
     @Override

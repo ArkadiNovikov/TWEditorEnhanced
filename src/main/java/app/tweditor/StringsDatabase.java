@@ -3,6 +3,7 @@ package app.tweditor;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import lombok.Getter;
 
 public class StringsDatabase {
 
@@ -11,6 +12,7 @@ public class StringsDatabase {
     private int stringCount;
     private int entryOffset;
     private int stringOffset;
+    @Getter
     private int languageID;
 
     public StringsDatabase(String filePath)
@@ -48,10 +50,6 @@ public class StringsDatabase {
 
     public String getName() {
         return this.file.getName();
-    }
-
-    public int getLanguageID() {
-        return this.languageID;
     }
 
     public String getString(int stringRef) {

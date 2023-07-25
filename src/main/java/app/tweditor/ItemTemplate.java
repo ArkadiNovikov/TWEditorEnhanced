@@ -1,11 +1,16 @@
 package app.tweditor;
 
+import lombok.Getter;
+
 public class ItemTemplate
         implements Comparable<ItemTemplate> {
 
-    private DBList fieldList;
+    @Getter
+    private final DBList fieldList;
+    @Getter
     private String itemName;
     private String resourceName;
+    @Getter
     private int baseItem;
 
     public ItemTemplate(DBList fieldList)
@@ -21,18 +26,6 @@ public class ItemTemplate
         this.itemName = this.fieldList.getString("LocalizedName");
 
         this.resourceName = this.fieldList.getString("TemplateResRef");
-    }
-
-    public String getItemName() {
-        return this.itemName;
-    }
-
-    public int getBaseItem() {
-        return this.baseItem;
-    }
-
-    public DBList getFieldList() {
-        return this.fieldList;
     }
 
     @Override

@@ -70,6 +70,7 @@ public class DBElement
         this.elementValue = value;
     }
 
+    @Override
     public Object clone() {
         Object clonedObject;
         try {

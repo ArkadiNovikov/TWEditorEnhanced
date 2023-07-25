@@ -16,8 +16,8 @@ import javax.swing.JTextPane;
 public class ExamineDialog extends JDialog
         implements ActionListener {
 
-    private JScrollPane scrollPane;
-    private JTextPane textPane;
+    private final JScrollPane scrollPane;
+    private final JTextPane textPane;
 
     public ExamineDialog(JFrame parent, String label, String description) {
         super(parent, label, true);
@@ -103,6 +103,7 @@ public class ExamineDialog extends JDialog
         setContentPane(contentPane);
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
         try {
             String action = ae.getActionCommand();

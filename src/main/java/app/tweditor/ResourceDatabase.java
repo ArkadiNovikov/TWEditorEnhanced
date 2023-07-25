@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 public class ResourceDatabase {
 
@@ -19,7 +20,9 @@ public class ResourceDatabase {
     private File file;
     private String databaseType;
     private String databaseVersion;
+    @Getter
     private LocalizedString description;
+    @Getter
     private List<ResourceEntry> entries;
     private Map<String, ResourceEntry> entryMap;
 
@@ -353,16 +356,8 @@ public class ResourceDatabase {
         this.databaseVersion = version;
     }
 
-    public LocalizedString getDescription() {
-        return this.description;
-    }
-
     public int getEntryCount() {
         return this.entries.size();
-    }
-
-    public List<ResourceEntry> getEntries() {
-        return this.entries;
     }
 
     public ResourceEntry getEntry(int index) {
